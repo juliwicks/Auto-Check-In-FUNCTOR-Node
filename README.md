@@ -110,7 +110,7 @@ This script automates the login and daily check-in process on the FUNCTOR Networ
     })();
     ```
 
-4. Replace `YOUREMAIL` and `YOURPASSWORD` with your FUNCTOR Network credentials.  
+4. Replace `YOUREMAIL` and `YOURPASSWORD` with your FUNCTOR Network credentials or just leave it if you don't want to auto-login
 5. Save the script.  
 
 ### Step 3: Enable the Script  
