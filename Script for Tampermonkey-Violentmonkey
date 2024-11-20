@@ -1,0 +1,90 @@
+// ==UserScript==
+// @name         Auto Check-In for FUNCTOR Network
+// @namespace    Nodebot Enhanced Tools
+// @version      1.0.0
+// @description  Automatically performs check-in and login tasks for FUNCTOR Network.
+// @author       Nodebot by Juliwicks
+// @match        https://node.securitylabs.xyz/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=securitylabs.xyz
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Define user credentials
+    const userEmail = 'YOUREMAIL';
+    const userPassword = 'YOURPASSWORD';
+
+    // Schedule regular tasks
+    setTimeout(initiateCheckIn, 10000);
+    setInterval(initiateCheckIn, 60000);
+    setTimeout(() => location.reload(), 3 * 60 * 60 * 1000); // Reload after 3 hours
+
+    function initiateCheckIn() {
+        if (isUserLoggedIn()) {
+            processCheckIn();
+        } else {
+            handleLoginSequence();
+        }
+    }
+
+    function isUserLoggedIn() {
+        const loginButtons = Array.from(document.querySelectorAll('.modal-body button'));
+        return !loginButtons.some(btn => btn.textContent.includes('EMAIL'));
+    }
+
+    function processCheckIn() {
+        const actionButton = document.querySelector('.lab-amount button');
+        if (actionButton && (actionButton.textContent === 'CHECK IN' || actionButton.textContent.includes('MINE'))) {
+            actionButton.click();
+            console.log('Performed Check-In');
+        }
+    }
+
+    function handleLoginSequence() {
+        triggerLoginModal();
+        setTimeout(() => enterCredentials(userEmail, userPassword), 2000);
+    }
+
+    function triggerLoginModal() {
+        const modalButtons = Array.from(document.querySelectorAll('.modal-body button'));
+        const emailLoginButton = modalButtons.find(btn => btn.textContent.includes('EMAIL'));
+        if (emailLoginButton) {
+            emailLoginButton.click();
+        }
+    }
+
+    function enterCredentials(email, password) {
+        const inputFields = Array.from(document.querySelectorAll('.terminal-input-container input'));
+
+        if (inputFields.length > 0) {
+            setFieldValue(inputFields[0], email);
+            simulateEnterKey(inputFields[0]);
+            setTimeout(() => {
+                if (inputFields[1]) {
+                    setFieldValue(inputFields[1], password);
+                    simulateEnterKey(inputFields[1]);
+                }
+            }, 2000);
+        }
+    }
+
+    function setFieldValue(field, value) {
+        const valueSetter = Object.getOwnPropertyDescriptor(field, 'value').set;
+        valueSetter.call(field, value);
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+        console.log(`Set value: ${value}`);
+    }
+
+    function simulateEnterKey(element) {
+        const enterEvent = new KeyboardEvent('keydown', {
+            key: 'Enter',
+            keyCode: 13,
+            bubbles: true,
+            cancelable: true
+        });
+        element.dispatchEvent(enterEvent);
+        console.log('Simulated Enter Key');
+    }
+})();
